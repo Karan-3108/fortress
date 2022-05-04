@@ -1,0 +1,61 @@
+syntax = "proto3";
+package Karan3108.fortress.fortress;
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/Karan-3108/Fortress/x/fortress/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc RequestFortress(MsgRequestFortress) returns (MsgRequestFortressResponse);
+  rpc ApproveFortress(MsgApproveFortress) returns (MsgApproveFortressResponse);
+  rpc RepayFortress(MsgRepayFortress) returns (MsgRepayFortressResponse);
+  rpc LiquidateFortress(MsgLiquidateFortress) returns (MsgLiquidateFortressResponse);
+  rpc CancelFortress(MsgCancelFortress) returns (MsgCancelFortressResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgRequestFortress {
+  string creator = 1;
+  string amount = 2;
+  string fee = 3;
+  string collateral = 4;
+  string deadline = 5;
+}
+
+message MsgRequestFortressResponse {
+}
+
+message MsgApproveFortress {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgApproveFortressResponse {
+}
+
+message MsgRepayFortress {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgRepayFortressResponse {
+}
+
+message MsgLiquidateFortress {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgLiquidateFortressResponse {
+}
+
+message MsgCancelFortress {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgCancelFortressResponse {
+}
+
+// this line is used by starport scaffolding # proto/tx/message
