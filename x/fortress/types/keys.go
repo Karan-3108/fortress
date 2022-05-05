@@ -25,3 +25,8 @@ const (
 	FortressKey      = "Fortress-value-"
 	FortressCountKey = "Fortress-count-"
 )
+
+const (
+	PostKey      = "Post-value-"
+	PostCountKey = "Post-count-"
+)

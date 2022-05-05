@@ -1,0 +1,12 @@
+syntax = "proto3";
+package Karan3108.fortress.blog;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/Karan-3108/Fortress/x/blog/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}

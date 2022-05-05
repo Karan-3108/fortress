@@ -36,6 +36,15 @@ export type FortressMsgRequestFortressResponse = object;
  */
 export type FortressParams = object;
 
+export interface FortressPost {
+  /** @format uint64 */
+  id?: string;
+  title?: string;
+  content?: string;
+  creator?: string;
+  blog?: string;
+}
+
 export interface FortressQueryAllFortressResponse {
   Fortress?: FortressFortress[];
 
@@ -51,8 +60,27 @@ export interface FortressQueryAllFortressResponse {
   pagination?: V1Beta1PageResponse;
 }
 
+export interface FortressQueryAllPostResponse {
+  Post?: FortressPost[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
 export interface FortressQueryGetFortressResponse {
   Fortress?: FortressFortress;
+}
+
+export interface FortressQueryGetPostResponse {
+  Post?: FortressPost;
 }
 
 /**
@@ -370,6 +398,48 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryFortress = (id: string, params: RequestParams = {}) =>
     this.request<FortressQueryGetFortressResponse, RpcStatus>({
       path: `/Karan-3108/fortress/fortress/fortress/${id}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryPostAll
+   * @summary Queries a list of Post items.
+   * @request GET:/Karan-3108/fortress/fortress/post
+   */
+  queryPostAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<FortressQueryAllPostResponse, RpcStatus>({
+      path: `/Karan-3108/fortress/fortress/post`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryPost
+   * @summary Queries a Post by id.
+   * @request GET:/Karan-3108/fortress/fortress/post/{id}
+   */
+  queryPost = (id: string, params: RequestParams = {}) =>
+    this.request<FortressQueryGetPostResponse, RpcStatus>({
+      path: `/Karan-3108/fortress/fortress/post/${id}`,
       method: "GET",
       format: "json",
       ...params,

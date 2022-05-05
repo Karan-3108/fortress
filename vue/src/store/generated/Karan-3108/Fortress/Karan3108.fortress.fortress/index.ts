@@ -2,9 +2,10 @@ import { txClient, queryClient, MissingWalletError , registry} from './module'
 
 import { Fortress } from "./module/types/fortress/fortress"
 import { Params } from "./module/types/fortress/params"
+import { Post } from "./module/types/fortress/post"
 
 
-export { Fortress, Params };
+export { Fortress, Params, Post };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -45,10 +46,13 @@ const getDefaultState = () => {
 				Params: {},
 				Fortress: {},
 				FortressAll: {},
+				Post: {},
+				PostAll: {},
 				
 				_Structure: {
 						Fortress: getStructure(Fortress.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
+						Post: getStructure(Post.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -94,6 +98,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.FortressAll[JSON.stringify(params)] ?? {}
+		},
+				getPost: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Post[JSON.stringify(params)] ?? {}
+		},
+				getPostAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.PostAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -199,18 +215,66 @@ export default {
 		},
 		
 		
-		async sendMsgApproveFortress({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		
+		 		
+		
+		
+		async QueryPost({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryPost( key.id)).data
+				
+					
+				commit('QUERY', { query: 'Post', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryPost', payload: { options: { all }, params: {...key},query }})
+				return getters['getPost']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryPost API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryPostAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryPostAll(query)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await queryClient.queryPostAll({...query, 'pagination.key':(<any> value).pagination.next_key})).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'PostAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryPostAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getPostAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryPostAll API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		async sendMsgRepayFortress({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgApproveFortress(value)
+				const msg = await txClient.msgRepayFortress(value)
 				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
 	gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgApproveFortress:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgRepayFortress:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgApproveFortress:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgRepayFortress:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -229,18 +293,33 @@ export default {
 				}
 			}
 		},
-		async sendMsgRepayFortress({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgRequestFortress({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgRepayFortress(value)
+				const msg = await txClient.msgRequestFortress(value)
 				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
 	gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgRepayFortress:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgRequestFortress:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgRepayFortress:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgRequestFortress:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgApproveFortress({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgApproveFortress(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgApproveFortress:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgApproveFortress:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -259,32 +338,17 @@ export default {
 				}
 			}
 		},
-		async sendMsgRequestFortress({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgRequestFortress(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgRequestFortress:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgRequestFortress:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		
-		async MsgApproveFortress({ rootGetters }, { value }) {
+		async MsgRepayFortress({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgApproveFortress(value)
+				const msg = await txClient.msgRepayFortress(value)
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgApproveFortress:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgRepayFortress:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgApproveFortress:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgRepayFortress:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -301,16 +365,29 @@ export default {
 				}
 			}
 		},
-		async MsgRepayFortress({ rootGetters }, { value }) {
+		async MsgRequestFortress({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgRepayFortress(value)
+				const msg = await txClient.msgRequestFortress(value)
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgRepayFortress:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgRequestFortress:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgRepayFortress:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgRequestFortress:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgApproveFortress({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgApproveFortress(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgApproveFortress:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgApproveFortress:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -324,19 +401,6 @@ export default {
 					throw new Error('TxClient:MsgLiquidateFortress:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgLiquidateFortress:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgRequestFortress({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgRequestFortress(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgRequestFortress:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgRequestFortress:Create Could not create message: ' + e.message)
 				}
 			}
 		},

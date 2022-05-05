@@ -4,19 +4,19 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgApproveFortress } from "./types/fortress/tx";
-import { MsgCancelFortress } from "./types/fortress/tx";
 import { MsgRepayFortress } from "./types/fortress/tx";
-import { MsgLiquidateFortress } from "./types/fortress/tx";
+import { MsgCancelFortress } from "./types/fortress/tx";
 import { MsgRequestFortress } from "./types/fortress/tx";
+import { MsgApproveFortress } from "./types/fortress/tx";
+import { MsgLiquidateFortress } from "./types/fortress/tx";
 
 
 const types = [
-  ["/Karan3108.fortress.fortress.MsgApproveFortress", MsgApproveFortress],
-  ["/Karan3108.fortress.fortress.MsgCancelFortress", MsgCancelFortress],
   ["/Karan3108.fortress.fortress.MsgRepayFortress", MsgRepayFortress],
-  ["/Karan3108.fortress.fortress.MsgLiquidateFortress", MsgLiquidateFortress],
+  ["/Karan3108.fortress.fortress.MsgCancelFortress", MsgCancelFortress],
   ["/Karan3108.fortress.fortress.MsgRequestFortress", MsgRequestFortress],
+  ["/Karan3108.fortress.fortress.MsgApproveFortress", MsgApproveFortress],
+  ["/Karan3108.fortress.fortress.MsgLiquidateFortress", MsgLiquidateFortress],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -49,11 +49,11 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
-    msgApproveFortress: (data: MsgApproveFortress): EncodeObject => ({ typeUrl: "/Karan3108.fortress.fortress.MsgApproveFortress", value: MsgApproveFortress.fromPartial( data ) }),
-    msgCancelFortress: (data: MsgCancelFortress): EncodeObject => ({ typeUrl: "/Karan3108.fortress.fortress.MsgCancelFortress", value: MsgCancelFortress.fromPartial( data ) }),
     msgRepayFortress: (data: MsgRepayFortress): EncodeObject => ({ typeUrl: "/Karan3108.fortress.fortress.MsgRepayFortress", value: MsgRepayFortress.fromPartial( data ) }),
-    msgLiquidateFortress: (data: MsgLiquidateFortress): EncodeObject => ({ typeUrl: "/Karan3108.fortress.fortress.MsgLiquidateFortress", value: MsgLiquidateFortress.fromPartial( data ) }),
+    msgCancelFortress: (data: MsgCancelFortress): EncodeObject => ({ typeUrl: "/Karan3108.fortress.fortress.MsgCancelFortress", value: MsgCancelFortress.fromPartial( data ) }),
     msgRequestFortress: (data: MsgRequestFortress): EncodeObject => ({ typeUrl: "/Karan3108.fortress.fortress.MsgRequestFortress", value: MsgRequestFortress.fromPartial( data ) }),
+    msgApproveFortress: (data: MsgApproveFortress): EncodeObject => ({ typeUrl: "/Karan3108.fortress.fortress.MsgApproveFortress", value: MsgApproveFortress.fromPartial( data ) }),
+    msgLiquidateFortress: (data: MsgLiquidateFortress): EncodeObject => ({ typeUrl: "/Karan3108.fortress.fortress.MsgLiquidateFortress", value: MsgLiquidateFortress.fromPartial( data ) }),
     
   };
 };

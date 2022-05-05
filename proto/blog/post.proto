@@ -1,0 +1,12 @@
+syntax = "proto3";
+package Karan3108.fortress.blog;
+
+option go_package = "github.com/Karan-3108/Fortress/x/blog/types";
+
+message Post {
+  uint64 id = 1;
+  string title = 2; 
+  string content = 3; 
+  string creator = 4; 
+  
+}

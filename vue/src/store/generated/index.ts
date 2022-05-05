@@ -1,5 +1,6 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import Karan3108FortressKaran3108FortressBlog from './Karan-3108/Fortress/Karan3108.fortress.blog'
 import Karan3108FortressKaran3108FortressFortress from './Karan-3108/Fortress/Karan3108.fortress.fortress'
 import CosmosCosmosSdkCosmosAuthV1Beta1 from './cosmos/cosmos-sdk/cosmos.auth.v1beta1'
 import CosmosCosmosSdkCosmosBankV1Beta1 from './cosmos/cosmos-sdk/cosmos.bank.v1beta1'
@@ -24,6 +25,7 @@ import CosmosIbcGoIbcCorePortV1 from './cosmos/ibc-go/ibc.core.port.v1'
 
 
 export default { 
+  Karan3108FortressKaran3108FortressBlog: load(Karan3108FortressKaran3108FortressBlog, 'Karan3108.fortress.blog'),
   Karan3108FortressKaran3108FortressFortress: load(Karan3108FortressKaran3108FortressFortress, 'Karan3108.fortress.fortress'),
   CosmosCosmosSdkCosmosAuthV1Beta1: load(CosmosCosmosSdkCosmosAuthV1Beta1, 'cosmos.auth.v1beta1'),
   CosmosCosmosSdkCosmosBankV1Beta1: load(CosmosCosmosSdkCosmosBankV1Beta1, 'cosmos.bank.v1beta1'),

@@ -16,6 +16,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set fortress count
 	k.SetFortressCount(ctx, genState.FortressCount)
+	// Set all the post
+	for _, elem := range genState.PostList {
+		k.SetPost(ctx, elem)
+	}
+
+	// Set post count
+	k.SetPostCount(ctx, genState.PostCount)
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -27,6 +34,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.FortressList = k.GetAllFortress(ctx)
 	genesis.FortressCount = k.GetFortressCount(ctx)
+	genesis.PostList = k.GetAllPost(ctx)
+	genesis.PostCount = k.GetPostCount(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis
