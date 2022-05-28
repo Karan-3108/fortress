@@ -20,7 +20,7 @@ You need to set the **genesis file** and **seeds**. If you need more information
 
 | Chain ID       | Description     | Site                                                               | Version                                                      | Status  |
 | -------------- | --------------- | ------------------------------------------------------------------ | ------------------------------------------------------------ | ------- |
-| `fortress_9001-2` | Fortress Mainnet 2 | [Fortress](https://github.com/Karan-3108/mainnet/tree/main/fortress_9001-2) | [`v0.1.1-alpha`](https://github.com/Karan-3108/fortress/releases/v0.1.1-alpha) | `Live`  |
+| `fortress_9001-2` | Fortress Mainnet 2 | [Fortress](https://github.com/Karan-3108/mainnet/tree/main/fortress_9001-2) | [`v0.1.2-alpha`](https://github.com/Karan-3108/fortress/releases/v0.1.2-alpha) | `Live`  |
 | `fortress_9001-1` | Fortress Mainnet 1 | [Fortress](https://github.com/Karan-3108/mainnet/tree/main/fortress_9001-1) | [`v2.0.1`](https://github.com/Karan-3108/fortress/releases/v2.0.1) | `Stale` |
 
 ## Install `fortressd`

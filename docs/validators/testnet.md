@@ -12,7 +12,7 @@ You specify the network you want to join by setting the **genesis file** and **s
 
 | Testnet Chain ID | Description                       | Site                                                                       | Version                                                                      | Status  |
 | ---------------- | --------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------- |
-| `fortress_9000-4`   | Fortress_9000-4 Testnet              | [Fortress 9000-4](https://github.com/Karan-3108/testnets/tree/main/fortress_9000-4) | [`v0.1.1-alpha`](https://github.com/Karan-3108/fortress/releases/v0.1.1-alpha)                 | `Live`  |
+| `fortress_9000-4`   | Fortress_9000-4 Testnet              | [Fortress 9000-4](https://github.com/Karan-3108/testnets/tree/main/fortress_9000-4) | [`v0.1.2-alpha`](https://github.com/Karan-3108/fortress/releases/v0.1.2-alpha)                 | `Live`  |
 | `fortress_9000-3`   | Fortress_9000-3 Testnet              | [Fortress 9000-3](https://github.com/Karan-3108/testnets/tree/main/fortress_9000-3) | [`v1.0.0-beta1`](https://github.com/Karan-3108/fortress/releases/tag/v1.0.0-beta1) | `Stale` |
 | `fortress_9000-2`   | Olympus Mons Incentivized Testnet | [Olympus Mons](https://github.com/Karan-3108/testnets/tree/main/olympus_mons) | [`v0.3.x`](https://github.com/Karan-3108/fortress/releases)                        | `Stale` |
 | `fortress_9000-1`   | Arsia Mons Testnet                | [Arsia Mons](https://github.com/Karan-3108/testnets/tree/main/arsia_mons)     | [`v0.1.x`](https://github.com/Karan-3108/fortress/releases)                        | `Stale` |

@@ -3,7 +3,7 @@ module github.com/Karan-3108/fortress/v4
 go 1.17
 
 require (
-	github.com/Karan-3108/ethermint v0.1.1-alpha
+	github.com/Karan-3108/ethermint v0.2.0-alpha
 	github.com/armon/go-metrics v0.3.11
 	github.com/cosmos/cosmos-sdk v0.45.4
 	github.com/cosmos/go-bip39 v1.0.0

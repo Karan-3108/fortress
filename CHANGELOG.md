@@ -52,13 +52,13 @@ Ref: https://keepachangelog.com/en/1.0.0/
 (claims) [\#605](https://github.com/Karan-3108/fortress/pull/605) Remove `claims-` prefix in CLI query commands.
 (erc20) [\#592](https://github.com/Karan-3108/fortress/pull/592) Finish module completeness audit.
 
-## [v0.1.1-alpha] - 2022-05-10
+## [v0.1.2-alpha] - 2022-05-10
 
 ### Bug Fixes
 
 (erc20) [\#588](https://github.com/Karan-3108/fortress/pull/588) Revert PR [\#556](https://github.com/Karan-3108/fortress/pull/556).
 
-## [v0.1.1-alpha] - 2022-05-09
+## [v0.1.2-alpha] - 2022-05-09
 
 ### State Machine Breaking
 
@@ -73,7 +73,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
-- (deps) [\#580](https://github.com/Karan-3108/fortress/pull/580) Bump Ethermint to [`v0.1.1-alpha`](https://github.com/Karan-3108/ethermint/releases/tag/v0.1.1-alpha)
+- (deps) [\#580](https://github.com/Karan-3108/fortress/pull/580) Bump Ethermint to [`v0.2.0-alpha`](https://github.com/Karan-3108/ethermint/releases/tag/v0.2.0-alpha)
 - (gitpod) [\#564](https://github.com/Karan-3108/fortress/pull/564) Add one-click development environment
 - (erc20) [\#556](https://github.com/Karan-3108/fortress/pull/556) Remove deprecated migrations.
 - (incentives) [\#551](https://github.com/Karan-3108/fortress/pull/551) Add additional check to only distribute incentives to EOAs.
@@ -89,7 +89,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
-- (app) [\#555](https://github.com/Karan-3108/fortress/pull/555) `v0.1.1-alpha` upgrade logic.
+- (app) [\#555](https://github.com/Karan-3108/fortress/pull/555) `v0.1.2-alpha` upgrade logic.
 - (p2p) [\#541](https://github.com/Karan-3108/fortress/pull/541) Increase default inbound connections and use 8:1 ratio of inbound:outbound. Add default seeds to reduce the need for configuration.
 - (deps) [\#528](https://github.com/Karan-3108/fortress/pull/528) Bump Cosmos SDK to [`v0.45.4`](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.4)
 
