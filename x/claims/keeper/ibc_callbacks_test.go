@@ -224,7 +224,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 		{
 			"fail - invalid sender",
 			func() {
-				transfer := transfertypes.NewFungibleTokenPacketData("afortress", "100", fortress", receiverStr)
+				transfer := transfertypes.NewFungibleTokenPacketData("afortress", "100", "fortress", receiverStr)
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 				packet := channeltypes.NewPacket(bz, 1, transfertypes.PortID, "channel-0", transfertypes.PortID, "channel-0", timeoutHeight, 0)
 

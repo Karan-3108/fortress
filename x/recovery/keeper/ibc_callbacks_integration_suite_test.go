@@ -123,7 +123,7 @@ var (
 		Path:      "transfer/channel-0",
 		BaseDenom: "afortress",
 	}
-	afortressIbcdenom = fortressDenomtrace.IBCDenom()
+	afortressIbcdenom = afortressDenomtrace.IBCDenom()
 
 	uatomOsmoDenomtrace = transfertypes.DenomTrace{
 		Path:      "transfer/channel-0/transfer/channel-1",
