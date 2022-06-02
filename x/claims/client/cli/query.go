@@ -84,7 +84,7 @@ func GetCmdQueryParams() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintObjectLegacy(&res.Params)
+			return clientCtx.PrintProto(&res.Params)
 		},
 	}
 
@@ -93,10 +93,10 @@ func GetCmdQueryParams() *cobra.Command {
 	return cmd
 }
 
-// GetCmdQueryClaimsRecords implements the query claim records command.
+// GetCmdQueryClaimsRecords implements the query claim-records command.
 func GetCmdQueryClaimsRecords() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "records",
+		Use:     "claims-records",
 		Args:    cobra.NoArgs,
 		Short:   "Query all the claims records",
 		Long:    "Query the list of all the claims records",
@@ -131,10 +131,10 @@ func GetCmdQueryClaimsRecords() *cobra.Command {
 	return cmd
 }
 
-// GetCmdQueryClaimsRecord implements the query claims record command.
+// GetCmdQueryClaimsRecord implements the query claim-record command.
 func GetCmdQueryClaimsRecord() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "record [address]",
+		Use:     "claims-record [address]",
 		Args:    cobra.ExactArgs(1),
 		Short:   "Query the claims records for an account.",
 		Long:    "Query the claims records for an account.\nThis contains an address' initial claimable amount, and the claims per action.",

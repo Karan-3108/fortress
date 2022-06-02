@@ -20,7 +20,7 @@ import (
 	"github.com/Karan-3108/fortress/v4/x/erc20/types"
 )
 
-// NewTxCmd returns a root CLI command handler for erc20 transaction commands
+// NewTxCmd returns a root CLI command handler for certain modules/erc20 transaction commands.
 func NewTxCmd() *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -37,11 +37,11 @@ func NewTxCmd() *cobra.Command {
 	return txCmd
 }
 
-// NewConvertCoinCmd returns a CLI command handler for converting a Cosmos coin
+// NewConvertCoinCmd returns a CLI command handler for converting cosmos coins
 func NewConvertCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-coin [coin] [receiver_hex]",
-		Short: "Convert a Cosmos coin to ERC20. When the receiver [optional] is omitted, the ERC20 tokens are transferred to the sender.",
+		Short: "Convert a Cosmos coin to ERC20",
 		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx, err := client.GetClientTxContext(cmd)
@@ -84,11 +84,11 @@ func NewConvertCoinCmd() *cobra.Command {
 	return cmd
 }
 
-// NewConvertERC20Cmd returns a CLI command handler for converting an ERC20
+// NewConvertERC20Cmd returns a CLI command handler for converting ERC20s
 func NewConvertERC20Cmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-erc20 [contract-address] [amount] [receiver]",
-		Short: "Convert an ERC20 token to Cosmos coin.  When the receiver [optional] is omitted, the Cosmos coins are transferred to the sender.",
+		Short: "Convert an ERC20 token to Cosmos coin",
 		Args:  cobra.RangeArgs(2, 3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx, err := client.GetClientTxContext(cmd)
@@ -149,22 +149,22 @@ The proposal details must be supplied via a JSON file.`,
 Where metadata.json contains (example):
 
 {
-	"description": "The native staking and governance token of the Osmosis chain",
-	"denom_units": [
+  "description": "staking, gas and governance token of the Fortress testnets"
+  "denom_units": [
 		{
-				"denom": "ibc/<HASH>",
-				"exponent": 0,
-				"aliases": ["ibcuosmo"]
+			"denom": "afortress",
+			"exponent": 0,
+			"aliases": ["atto fortress"]
 		},
 		{
-				"denom": "OSMO",
-				"exponent": 6
+			"denom": "fortress",
+			"exponent": 18
 		}
 	],
-	"base": "ibc/<HASH>",
-	"display": "OSMO",
-	"name": "Osmo",
-	"symbol": "OSMO"
+	"base": "afortress",
+	"display: "fortress",
+	"name": "Fortress",
+	"symbol": "FORTRESS"
 }`, version.AppName,
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -237,7 +237,7 @@ func NewRegisterERC20ProposalCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		Short:   "Submit a proposal to register an ERC20 token",
 		Long:    "Submit a proposal to register an ERC20 token to the erc20 along with an initial deposit.",
-		Example: fmt.Sprintf("$ %s tx gov submit-proposal register-erc20 <contract-address> --from=<key_or_address>", version.AppName),
+		Example: fmt.Sprintf("$ %s tx gov submit-proposal register-erc20 <path/to/proposal.json> --from=<key_or_address>", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

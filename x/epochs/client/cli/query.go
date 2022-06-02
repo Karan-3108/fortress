@@ -63,8 +63,7 @@ func GetCmdEpochsInfos() *cobra.Command {
 				return err
 			}
 
-			// return clientCtx.PrintProto(res)
-			return clientCtx.PrintObjectLegacy(res)
+			return clientCtx.PrintProto(res)
 		},
 	}
 

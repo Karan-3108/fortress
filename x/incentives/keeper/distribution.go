@@ -4,8 +4,6 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/armon/go-metrics"
-	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
@@ -13,99 +11,80 @@ import (
 	"github.com/Karan-3108/fortress/v4/x/incentives/types"
 )
 
-// DistributeRewards transfers the allocated rewards to the participants of a given
+// Distribute transfers the allocated rewards to the participants of a given
 // incentive.
 //  - allocates the amount to be distributed from the inflation pool
 //  - distributes the rewards to all particpants
 //  - deletes all gas meters
 //  - updates the remaining epochs of each incentive
 //  - sets the cumulative totalGas to zero
-func (k Keeper) DistributeRewards(ctx sdk.Context) error {
+func (k Keeper) DistributeIncentives(ctx sdk.Context) error {
 	logger := k.Logger(ctx)
 
-	rewardAllocations, totalRewards, err := k.rewardAllocations(ctx)
+	// Allocate rewards for each Incentive
+	coinsAllocated, err := k.allocateCoins(ctx)
 	if err != nil {
 		return err
 	}
 
-	k.IterateIncentives(ctx, func(incentive types.Incentive) (stop bool) {
-		rewards, participants := k.rewardParticipants(ctx, incentive, rewardAllocations)
+	// Iterate over each incentive and distribute allocated rewards
+	k.IterateIncentives(
+		ctx,
+		func(incentive types.Incentive) (stop bool) {
+			// Distribute rewards
+			k.rewardParticipants(ctx, incentive, coinsAllocated)
 
-		incentive.Epochs--
+			// Update epoch
+			incentive.Epochs--
 
-		// Update Incentive and reset its total gas count. Remove incentive if it
-		// has no remaining epochs left.
-		if incentive.IsActive() {
-			k.SetIncentive(ctx, incentive)
-			k.SetIncentiveTotalGas(ctx, incentive, 0)
-		} else {
-			k.DeleteIncentiveAndUpdateAllocationMeters(ctx, incentive)
-			logger.Info(
-				"incentive finalized",
-				"contract", incentive.Contract,
-			)
-		}
-
-		defer func() {
-			if !rewards.IsZero() {
-				telemetry.IncrCounterWithLabels(
-					[]string{types.ModuleName, "distribute", "participant", "total"},
-					float32(participants),
-					[]metrics.Label{
-						telemetry.NewLabel("contract", incentive.Contract),
-					},
+			// Update Incentive and reset its total gas count
+			if incentive.IsActive() {
+				k.SetIncentive(ctx, incentive)
+				k.SetIncentiveTotalGas(ctx, incentive, 0)
+			} else {
+				// Remove incentive if it has no remaining epochs
+				k.DeleteIncentiveAndUpdateAllocationMeters(ctx, incentive)
+				logger.Info(
+					"incentive finalized",
+					"contract", incentive.Contract,
 				)
 			}
-		}()
 
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypeDistributeIncentives,
-				sdk.NewAttribute(types.AttributeKeyContract, incentive.Contract),
-				sdk.NewAttribute(
-					types.AttributeKeyEpochs,
-					strconv.FormatUint(uint64(incentive.Epochs), 10),
+			ctx.EventManager().EmitEvent(
+				sdk.NewEvent(
+					types.EventTypeDistributeIncentives,
+					sdk.NewAttribute(types.AttributeKeyContract, incentive.Contract),
+					sdk.NewAttribute(
+						types.AttributeKeyEpochs,
+						strconv.FormatUint(uint64(incentive.Epochs), 10),
+					),
 				),
-			),
-		)
-		return false
-	})
-
-	defer func() {
-		for _, r := range totalRewards {
-			if r.Amount.IsInt64() {
-				telemetry.IncrCounterWithLabels(
-					[]string{types.ModuleName, "distribute", "reward", "total"},
-					float32(r.Amount.Int64()),
-					[]metrics.Label{telemetry.NewLabel("denom", r.Denom)},
-				)
-			}
-		}
-	}()
+			)
+			return false
+		})
 
 	return nil
 }
 
-// rewardAllocations returns a map of each incentive's reward allocation
+// Allocate amount of coins to be distributed for each incentive
 //  - Iterate over all the registered and active incentives
 //  - create an allocation (module account) from escrow balance to be distributed to the contract address
 //  - check that escrow balance is sufficient
-func (k Keeper) rewardAllocations(
-	ctx sdk.Context,
-) (map[common.Address]sdk.Coins, sdk.Coins, error) {
+func (k Keeper) allocateCoins(ctx sdk.Context) (map[common.Address]sdk.Coins, error) {
 	// Get balances on incentive module account
 	denomBalances := make(map[string]sdk.Int)
 	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
-	escrow := k.bankKeeper.GetAllBalances(ctx, moduleAddr)
-	for _, coin := range escrow {
+	escrowedCoins := k.bankKeeper.GetAllBalances(ctx, moduleAddr)
+	for _, coin := range escrowedCoins {
 		if !coin.Amount.IsPositive() {
 			continue
 		}
 		denomBalances[coin.Denom] = coin.Amount
 	}
 
-	rewardAllocations := make(map[common.Address]sdk.Coins)
-	rewards := sdk.Coins{}
+	// Iterate over each incentive's allocations to create map off allocated coins
+	coinsAllocated := make(map[common.Address]sdk.Coins)
+	totalAllocated := sdk.Coins{}
 	k.IterateIncentives(
 		ctx,
 		func(incentive types.Incentive) (stop bool) {
@@ -125,27 +104,26 @@ func (k Keeper) rewardAllocations(
 				coins = coins.Add(coin)
 			}
 
-			rewardAllocations[contract] = coins
-			rewards = rewards.Add(coins...)
+			coinsAllocated[contract] = coins
+			totalAllocated = totalAllocated.Add(coins...)
 
 			return false
 		},
 	)
 
 	// checks if escrow balance has sufficient balance for allocation
-	if rewards.IsAnyGT(escrow) {
-		return nil, nil, sdkerrors.Wrapf(
+	if totalAllocated.IsAnyGT(escrowedCoins) {
+		return nil, sdkerrors.Wrapf(
 			sdkerrors.ErrInsufficientFunds,
 			"escrowed balance < total coins allocated (%s < %s)",
-			escrow, rewards,
+			escrowedCoins, totalAllocated,
 		)
 	}
 
-	return rewardAllocations, rewards, nil
+	return coinsAllocated, nil
 }
 
-// rewardParticipants reward participants of a given Incentive, delete their gas
-// meters and returns a count of all gas meters
+// Reward Participants of a given Incentive and delete their gas meters
 //  - Check if participants spent gas on interacting with incentive
 //  - Iterate over the incentive participants' gas meters
 //    - Allocate rewards according to participants gasRatio and cap them at 100% of their gas spent on interaction with incentive
@@ -155,7 +133,7 @@ func (k Keeper) rewardParticipants(
 	ctx sdk.Context,
 	incentive types.Incentive,
 	coinsAllocated map[common.Address]sdk.Coins,
-) (rewards sdk.Coins, count uint64) {
+) {
 	logger := k.Logger(ctx)
 
 	// Check if coin allocation was successful
@@ -166,7 +144,7 @@ func (k Keeper) rewardParticipants(
 			"contract allocation coins not found",
 			"contract", incentive.Contract,
 		)
-		return sdk.Coins{}, 0
+		return
 	}
 
 	// Check if participants spent gas on interacting with incentive
@@ -176,7 +154,7 @@ func (k Keeper) rewardParticipants(
 			"no gas spent on incentive during epoch",
 			"contract", incentive.Contract,
 		)
-		return sdk.Coins{}, 0
+		return
 	}
 
 	totalGasDec := sdk.NewDecFromBigInt(new(big.Int).SetUint64(totalGas))
@@ -213,8 +191,6 @@ func (k Keeper) rewardParticipants(
 				coins = coins.Add(coin)
 			}
 
-			rewards = rewards.Add(coins...)
-
 			// Send rewards to participant
 			participant := common.HexToAddress(gm.Participant)
 			err := k.bankKeeper.SendCoinsFromModuleToAccount(
@@ -236,11 +212,7 @@ func (k Keeper) rewardParticipants(
 
 			// Remove gas meter once the rewards are distributed
 			k.DeleteGasMeter(ctx, gm)
-			count++
 
 			return false
-		},
-	)
-
-	return rewards, count
+		})
 }

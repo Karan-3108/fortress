@@ -22,20 +22,20 @@ Allows users to query total amount of unclaimed tokens from the airdrop.
 fortressd query claims total-unclaimed [flags]
 ```
 
-**`records`**
+**`claims-records`**
 
 Allows users to query all the claims records available.
 
 ```bash
-fortressd query claims records [flags]
+fortressd query claims claims-records [flags]
 ```
 
-**`record`**
+**`claims-record`**
 
 Allows users to query a claims record for a given user.
 
 ```bash
-fortressd query claims record [address] [flags]
+fortressd query claims claims-record [address] [flags]
 ```
 
 **`params`**

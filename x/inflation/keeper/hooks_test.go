@@ -55,7 +55,7 @@ func (suite *KeeperTestSuite) TestEpochIdentifierAfterEpochEnd() {
 	}
 }
 
-func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
+func (suite *KeeperTestSuite) TestPeriodChangesAfterEpochEnd() {
 	suite.SetupTest()
 
 	currentEpochPeriod := suite.app.InflationKeeper.GetEpochsPerPeriod(suite.ctx)
@@ -66,34 +66,14 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 		name            string
 		currentPeriod   int64
 		height          int64
-		epochIdentifier string
 		skippedEpochs   uint64
 		enableInflation bool
-		periodChanges   bool
+		changes         bool
 	}{
-		{
-			"SkippedEpoch set DayEpochID disabledInflation",
-			0,
-			currentEpochPeriod - 10, // so it's within range
-			epochstypes.DayEpochID,
-			0,
-			false,
-			false,
-		},
-		{
-			"SkippedEpoch set WeekEpochID disabledInflation ",
-			0,
-			currentEpochPeriod - 10, // so it's within range
-			epochstypes.WeekEpochID,
-			0,
-			false,
-			false,
-		},
 		{
 			"[Period 0] disabledInflation",
 			0,
 			currentEpochPeriod - 10, // so it's within range
-			epochstypes.DayEpochID,
 			0,
 			false,
 			false,
@@ -102,7 +82,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			"[Period 0] period stays the same under epochs per period",
 			0,
 			currentEpochPeriod - 10, // so it's within range
-			epochstypes.DayEpochID,
 			0,
 			true,
 			false,
@@ -111,7 +90,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			"[Period 0] period changes once enough epochs have passed",
 			0,
 			currentEpochPeriod + 1,
-			epochstypes.DayEpochID,
 			0,
 			true,
 			true,
@@ -120,7 +98,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			"[Period 1] period stays the same under the epoch per period",
 			1,
 			2*currentEpochPeriod - 1,
-			epochstypes.DayEpochID,
 			0,
 			true,
 			false,
@@ -129,7 +106,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			"[Period 1] period changes once enough epochs have passed",
 			1,
 			2*currentEpochPeriod + 1,
-			epochstypes.DayEpochID,
 			0,
 			true,
 			true,
@@ -138,7 +114,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			"[Period 0] with skipped epochs - period stays the same under epochs per period",
 			0,
 			currentEpochPeriod - 1,
-			epochstypes.DayEpochID,
 			10,
 			true,
 			false,
@@ -147,7 +122,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			"[Period 0] with skipped epochs - period stays the same under epochs per period",
 			0,
 			currentEpochPeriod + 1,
-			epochstypes.DayEpochID,
 			10,
 			true,
 			false,
@@ -156,7 +130,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			"[Period 0] with skipped epochs - period changes once enough epochs have passed",
 			0,
 			currentEpochPeriod + 11,
-			epochstypes.DayEpochID,
 			10,
 			true,
 			true,
@@ -165,7 +138,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			"[Period 1] with skipped epochs - period stays the same under epochs per period",
 			1,
 			2*currentEpochPeriod + 1,
-			epochstypes.DayEpochID,
 			10,
 			true,
 			false,
@@ -174,7 +146,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			"[Period 1] with skipped epochs - period changes once enough epochs have passed",
 			1,
 			2*currentEpochPeriod + 11,
-			epochstypes.DayEpochID,
 			10,
 			true,
 			true,
@@ -198,17 +169,18 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			suite.app.InflationKeeper.SetPeriod(suite.ctx, uint64(tc.currentPeriod))
 			currentSkippedEpochs := suite.app.InflationKeeper.GetSkippedEpochs(suite.ctx)
 			currentPeriod := suite.app.InflationKeeper.GetPeriod(suite.ctx)
+			epochIdentifier := suite.app.InflationKeeper.GetEpochIdentifier(suite.ctx)
 			originalProvision, found := suite.app.InflationKeeper.GetEpochMintProvision(suite.ctx)
 			suite.Require().True(found)
 
 			// Perform Epoch Hooks
 			futureCtx := suite.ctx.WithBlockTime(time.Now().Add(time.Minute))
-			suite.app.EpochsKeeper.BeforeEpochStart(futureCtx, tc.epochIdentifier, tc.height)
-			suite.app.EpochsKeeper.AfterEpochEnd(futureCtx, tc.epochIdentifier, tc.height)
+			suite.app.EpochsKeeper.BeforeEpochStart(futureCtx, epochIdentifier, tc.height)
+			suite.app.EpochsKeeper.AfterEpochEnd(futureCtx, epochIdentifier, tc.height)
 			skippedEpochs := suite.app.InflationKeeper.GetSkippedEpochs(suite.ctx)
 			period := suite.app.InflationKeeper.GetPeriod(suite.ctx)
 
-			if tc.periodChanges {
+			if tc.changes {
 				newProvision, found := suite.app.InflationKeeper.GetEpochMintProvision(suite.ctx)
 				suite.Require().True(found)
 				expectedProvision := types.CalculateEpochMintProvision(
@@ -225,10 +197,7 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 			} else {
 				suite.Require().Equal(currentPeriod, period)
 				if !tc.enableInflation {
-					// Check for epochIdentifier for skippedEpoch increment
-					if tc.epochIdentifier == epochstypes.DayEpochID {
-						suite.Require().Equal(currentSkippedEpochs+1, skippedEpochs)
-					}
+					suite.Require().Equal(currentSkippedEpochs+1, skippedEpochs)
 				}
 			}
 		})

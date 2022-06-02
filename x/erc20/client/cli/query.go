@@ -10,7 +10,7 @@ import (
 	"github.com/Karan-3108/fortress/v4/x/erc20/types"
 )
 
-// GetQueryCmd returns the parent command for all erc20 CLI query commands
+// GetQueryCmd returns the parent command for all erc20 CLI query commands.
 func GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -28,12 +28,12 @@ func GetQueryCmd() *cobra.Command {
 	return cmd
 }
 
-// GetTokenPairsCmd queries all registered token pairs
+// GetTokenPairsCmd queries a token pairs registered
 func GetTokenPairsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "token-pairs",
-		Short: "Gets registered token pairs",
-		Long:  "Gets registered token pairs",
+		Short: "Gets token pairs registered",
+		Long:  "Gets token pairs registered",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -65,12 +65,12 @@ func GetTokenPairsCmd() *cobra.Command {
 	return cmd
 }
 
-// GetTokenPairsCmd queries a registered token pair
+// GetTokenPairsCmd queries a token pairs registered
 func GetTokenPairCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "token-pair [token]",
-		Short: "Get a registered token pair",
-		Long:  "Get a registered token pair",
+		Short: "Get a token pair registered",
+		Long:  "Get a token pair registered",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -97,7 +97,7 @@ func GetTokenPairCmd() *cobra.Command {
 	return cmd
 }
 
-// GetParamsCmd queries erc20 module params
+// GetHubParamsCmd queries hub info
 func GetParamsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",

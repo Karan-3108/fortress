@@ -16,7 +16,7 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-// TokenPairs returns all registered pairs
+// TokenPairs return registered pairs
 func (k Keeper) TokenPairs(c context.Context, req *types.QueryTokenPairsRequest) (*types.QueryTokenPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")

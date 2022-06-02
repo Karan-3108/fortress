@@ -61,14 +61,11 @@ $ npx hardhat
 888    888 888  888 888    Y88b 888 888  888 888  888 Y88b.
 888    888 "Y888888 888     "Y88888 888  888 "Y888888  "Y888
 
-👷 Welcome to Hardhat v2.9.3 👷‍
+Welcome to Hardhat v2.0.8
 
 ? What do you want to do? …
-  Create a basic sample project
-❯ Create an advanced sample project
-  Create an advanced sample project that uses TypeScript
+❯ Create a sample project
   Create an empty hardhat.config.js
-  Quit
 ```
 
 Following the prompts should create a new project structure in your directory. Consult the [Hardhat config page](https://hardhat.org/config/) for a list of configuration options to specify in `hardhat.config.js`. Most importantly, you should set the `defaultNetwork` entry to point to your desired JSON-RPC network:
@@ -101,7 +98,7 @@ module.exports = {
     hardhat: {
     },
     testnet: {
-      url: "https://eth.bd.fortress.dev:8545",
+      url: "https://fortress-archive-testnet.api.bdnodes.net:8545/",
       accounts: [privateKey1, privateKey2, ...]
     }
   },
@@ -154,7 +151,7 @@ contract Greeter {
 This contract allows you to set and query a string `greeting`. Hardhat also provides a script to deploy smart contracts to a target network; this can be invoked via the following command, targeting your default network:
 
 ```bash
-npx hardhat run scripts/deploy.js
+npx hardhat run scripts/sample-script.js
 ```
 
 Hardhat also lets you manually specify a target network via the `--network <your-network>` flag:
@@ -163,14 +160,14 @@ Hardhat also lets you manually specify a target network via the `--network <your
 ::: tab Local Node
 
 ```bash
-npx hardhat run --network {{ $themeConfig.project.rpc_url_local }} scripts/deploy.js
+npx hardhat run --network {{ $themeConfig.project.rpc_url_local }} scripts/sample-script.js
 ```
 
 :::
 ::: tab Testnet
 
 ```bash
-npx hardhat run --network {{ $themeConfig.project.rpc_url_testnet }} scripts/deploy.js
+npx hardhat run --network {{ $themeConfig.project.rpc_url_testnet }} scripts/sample-script.js
 ```
 
 :::

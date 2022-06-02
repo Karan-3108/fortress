@@ -161,6 +161,8 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 	mockpacket := channeltypes.NewPacket(ibcgotesting.MockPacketData, 1, transfertypes.PortID, "channel-0", transfertypes.PortID, "channel-0", timeoutHeight, disabledTimeoutTimestamp)
 	ack := ibcmock.MockAcknowledgement
 
+	triggerAmt := types.IBCTriggerAmt
+
 	testCases := []struct {
 		name string
 		test func()
@@ -222,7 +224,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 		{
 			"fail - invalid sender",
 			func() {
-				transfer := transfertypes.NewFungibleTokenPacketData("afortress", "100", "fortress", receiverStr)
+				transfer := transfertypes.NewFungibleTokenPacketData("afortress", "100", fortress", receiverStr)
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 				packet := channeltypes.NewPacket(bz, 1, transfertypes.PortID, "channel-0", transfertypes.PortID, "channel-0", timeoutHeight, 0)
 
@@ -289,7 +291,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 			},
 		},
 		{
-			"case 1: no-op - sender ≠ recipient, but wrong trigger amount",
+			"case 1: no-op - sender ≠ recipient, but wrong triggerAmt",
 			func() {
 				transfer := transfertypes.NewFungibleTokenPacketData("afortress", "100", senderStr, receiverStr)
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
@@ -308,7 +310,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 		{
 			"case 1: fail - not enough funds on escrow account",
 			func() {
-				transfer := transfertypes.NewFungibleTokenPacketData("afortress", types.IBCTriggerAmt, senderStr, receiverStr)
+				transfer := transfertypes.NewFungibleTokenPacketData("afortress", triggerAmt, senderStr, receiverStr)
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 				packet := channeltypes.NewPacket(bz, 1, transfertypes.PortID, "channel-0", transfertypes.PortID, "channel-0", timeoutHeight, 0)
 
@@ -325,7 +327,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 		{
 			"case 1: pass/merge - sender ≠ recipient",
 			func() {
-				transfer := transfertypes.NewFungibleTokenPacketData("afortress", types.IBCTriggerAmt, senderStr, receiverStr)
+				transfer := transfertypes.NewFungibleTokenPacketData("afortress", triggerAmt, senderStr, receiverStr)
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 				packet := channeltypes.NewPacket(bz, 1, transfertypes.PortID, "channel-0", transfertypes.PortID, "channel-0", timeoutHeight, 0)
 
@@ -349,7 +351,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 			},
 		},
 		{
-			"case 2: no-op - same sender ≠ recipient, sender claims record found, but wrong types.IBCTriggerAmt",
+			"case 2: no-op - same sender ≠ recipient, sender claims record found, but wrong triggerAmt",
 			func() {
 				transfer := transfertypes.NewFungibleTokenPacketData("afortress", "100", senderStr, receiverStr)
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
@@ -368,7 +370,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 		{
 			"case 2: no-op - same sender ≠ recipient, sender claims record found, not enough escowed funds",
 			func() {
-				transfer := transfertypes.NewFungibleTokenPacketData("afortress", types.IBCTriggerAmt, senderStr, receiverStr)
+				transfer := transfertypes.NewFungibleTokenPacketData("afortress", triggerAmt, senderStr, receiverStr)
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 				packet := channeltypes.NewPacket(bz, 1, transfertypes.PortID, "channel-0", transfertypes.PortID, "channel-0", timeoutHeight, 0)
 
@@ -385,7 +387,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 		{
 			"case 2: pass/migrate - same sender ≠ recipient, sender claims record found",
 			func() {
-				transfer := transfertypes.NewFungibleTokenPacketData("afortress", types.IBCTriggerAmt, senderStr, receiverStr)
+				transfer := transfertypes.NewFungibleTokenPacketData("afortress", triggerAmt, senderStr, receiverStr)
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 				packet := channeltypes.NewPacket(bz, 1, transfertypes.PortID, "channel-0", transfertypes.PortID, "channel-0", timeoutHeight, 0)
 
@@ -397,15 +399,6 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 				// check that the record is migrated
 				suite.Require().False(suite.app.ClaimsKeeper.HasClaimsRecord(suite.ctx, sender))
 				suite.Require().True(suite.app.ClaimsKeeper.HasClaimsRecord(suite.ctx, receiver))
-
-				expCR := types.ClaimsRecord{
-					InitialClaimableAmount: sdk.NewInt(100),
-					ActionsCompleted:       []bool{false, false, false, true},
-				}
-
-				cr, found := suite.app.ClaimsKeeper.GetClaimsRecord(suite.ctx, receiver)
-				suite.Require().True(found)
-				suite.Require().Equal(expCR, cr)
 			},
 		},
 		{
@@ -442,6 +435,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 				suite.Require().True(suite.app.ClaimsKeeper.HasClaimsRecord(suite.ctx, receiver))
 			},
 		},
+		// TODO
 		{
 			"case 3: claim - same Address with authorized EVM channel, with claims record",
 			func() {

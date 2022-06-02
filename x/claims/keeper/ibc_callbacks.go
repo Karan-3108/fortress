@@ -111,7 +111,7 @@ func (k Keeper) OnRecvPacket(
 	sameAddress := sender.Equals(recipient)
 	fromEVMChain := params.IsEVMChannel(packet.DestinationChannel)
 
-	// If the packet is sent from a non-EVM chain, the sender address is not an
+	// If the packet is sent from a non-EVM chain, the sender addresss is not an
 	// ethereum key (i.e. `ethsecp256k1`). Thus, if `sameAddress` is true, the
 	// recipient address must be a non-ethereum key as well, which is not
 	// supported on Fortress. To prevent funds getting stuck, return an error, unless
@@ -184,8 +184,7 @@ func (k Keeper) OnRecvPacket(
 			break
 		}
 
-		// delete the claims record from sender
-		// NOTE: claim record is migrated to the recipient in ClaimCoinsForAction
+		k.SetClaimsRecord(ctx, recipient, senderClaimsRecord)
 		k.DeleteClaimsRecord(ctx, sender)
 
 		logger.Debug(

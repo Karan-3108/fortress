@@ -14,16 +14,10 @@ import (
 var teamAlloc = sdk.NewInt(200_000_000).Mul(ethermint.PowerReduction)
 
 // MintAndAllocateInflation performs inflation minting and allocation
-func (k Keeper) MintAndAllocateInflation(
-	ctx sdk.Context,
-	coin sdk.Coin,
-) (
-	staking, incentives, communityPool sdk.Coins,
-	err error,
-) {
+func (k Keeper) MintAndAllocateInflation(ctx sdk.Context, coin sdk.Coin) error {
 	// Mint coins for distribution
 	if err := k.MintCoins(ctx, coin); err != nil {
-		return nil, nil, nil, err
+		return err
 	}
 
 	// Allocate minted coins according to allocation proportions (staking, usage
@@ -33,15 +27,15 @@ func (k Keeper) MintAndAllocateInflation(
 
 // MintCoins implements an alias call to the underlying supply keeper's
 // MintCoins to be used in BeginBlocker.
-func (k Keeper) MintCoins(ctx sdk.Context, coin sdk.Coin) error {
-	coins := sdk.NewCoins(coin)
+func (k Keeper) MintCoins(ctx sdk.Context, newCoin sdk.Coin) error {
+	newCoins := sdk.NewCoins(newCoin)
 
 	// skip as no coins need to be minted
-	if coins.Empty() {
+	if newCoins.Empty() {
 		return nil
 	}
 
-	return k.bankKeeper.MintCoins(ctx, types.ModuleName, coins)
+	return k.bankKeeper.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
 // AllocateExponentialInflation allocates coins from the inflation to external
@@ -49,54 +43,43 @@ func (k Keeper) MintCoins(ctx sdk.Context, coin sdk.Coin) error {
 //   - staking rewards -> sdk `auth` module fee collector
 //   - usage incentives -> `x/incentives` module
 //   - community pool -> `sdk `distr` module community pool
-func (k Keeper) AllocateExponentialInflation(
-	ctx sdk.Context,
-	mintedCoin sdk.Coin,
-) (
-	staking, incentives, communityPool sdk.Coins,
-	err error,
-) {
+func (k Keeper) AllocateExponentialInflation(ctx sdk.Context, mintedCoin sdk.Coin) error {
 	params := k.GetParams(ctx)
 	proportions := params.InflationDistribution
 
 	// Allocate staking rewards into fee collector account
-	staking = sdk.NewCoins(k.GetProportions(ctx, mintedCoin, proportions.StakingRewards))
-	err = k.bankKeeper.SendCoinsFromModuleToModule(
+	stakingRewardsAmt := sdk.NewCoins(k.GetProportions(ctx, mintedCoin, proportions.StakingRewards))
+	err := k.bankKeeper.SendCoinsFromModuleToModule(
 		ctx,
 		types.ModuleName,
 		k.feeCollectorName,
-		staking,
+		stakingRewardsAmt,
 	)
 	if err != nil {
-		return nil, nil, nil, err
+		return err
 	}
 
 	// Allocate usage incentives to incentives module account
-	incentives = sdk.NewCoins(k.GetProportions(ctx, mintedCoin, proportions.UsageIncentives))
+	usageIncentivesAmt := sdk.NewCoins(k.GetProportions(ctx, mintedCoin, proportions.UsageIncentives))
 	err = k.bankKeeper.SendCoinsFromModuleToModule(
 		ctx,
 		types.ModuleName,
 		incentivestypes.ModuleName,
-		incentives,
+		usageIncentivesAmt,
 	)
 	if err != nil {
-		return nil, nil, nil, err
+		return err
 	}
 
 	// Allocate community pool amount (remaining module balance) to community
 	// pool address
 	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
-	communityPool = k.bankKeeper.GetAllBalances(ctx, moduleAddr)
-	err = k.distrKeeper.FundCommunityPool(
+	communityPoolAmt := k.bankKeeper.GetAllBalances(ctx, moduleAddr)
+	return k.distrKeeper.FundCommunityPool(
 		ctx,
-		communityPool,
+		communityPoolAmt,
 		moduleAddr,
 	)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	return staking, incentives, communityPool, nil
 }
 
 // GetAllocationProportion calculates the proportion of coins that is to be

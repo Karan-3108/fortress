@@ -10,7 +10,7 @@ import (
 	"github.com/Karan-3108/fortress/v4/x/erc20/types"
 )
 
-func (suite *KeeperTestSuite) TestGetTokenPairs() {
+func (suite *KeeperTestSuite) TestGetAllTokenPairs() {
 	var expRes []types.TokenPair
 
 	testCases := []struct {
@@ -46,7 +46,7 @@ func (suite *KeeperTestSuite) TestGetTokenPairs() {
 			suite.SetupTest() // reset
 
 			tc.malleate()
-			res := suite.app.Erc20Keeper.GetTokenPairs(suite.ctx)
+			res := suite.app.Erc20Keeper.GetAllTokenPairs(suite.ctx)
 
 			suite.Require().ElementsMatch(expRes, res, tc.name)
 		})

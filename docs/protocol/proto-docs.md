@@ -72,6 +72,7 @@
   
 - [fortress/fees/v1/fees.proto](#fortress/fees/v1/fees.proto)
     - [DevFeeInfo](#fortress.fees.v1.DevFeeInfo)
+    - [DevFeeInfosPerDeployer](#fortress.fees.v1.DevFeeInfosPerDeployer)
   
 - [fortress/fees/v1/genesis.proto](#fortress/fees/v1/genesis.proto)
     - [GenesisState](#fortress.fees.v1.GenesisState)
@@ -762,6 +763,17 @@ for the owner of a given smart contract
 | `contract_address` | [string](#string) |  | hex address of registered contract |
 | `deployer_address` | [string](#string) |  | bech32 address of contract deployer |
 | `withdraw_address` | [string](#string) |  | bech32 address of account receiving the transaction fees it defaults to deployer_address |
+
+<a name="fortress.fees.v1.DevFeeInfosPerDeployer"></a>
+
+### DevFeeInfosPerDeployer
+
+DevFeeInfosPerDeployer defines an instance that keeps track of all
+contracts registered by a deployer
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `contract_addresses` | [string](#string) | repeated |  |
 
  <!-- end messages -->
 

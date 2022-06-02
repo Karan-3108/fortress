@@ -15,7 +15,7 @@ import (
 
 func init() {
 	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("fortress", "fortresspub")
+	cfg.SetBech32PrefixForAccount("fortress", fortresspub")
 }
 
 func TestGetTransferSenderRecipient(t *testing.T) {

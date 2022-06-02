@@ -121,9 +121,6 @@ import (
 	erc20client "github.com/Karan-3108/fortress/v4/x/erc20/client"
 	erc20keeper "github.com/Karan-3108/fortress/v4/x/erc20/keeper"
 	erc20types "github.com/Karan-3108/fortress/v4/x/erc20/types"
-	"github.com/Karan-3108/fortress/v4/x/fees"
-	feeskeeper "github.com/Karan-3108/fortress/v4/x/fees/keeper"
-	feestypes "github.com/Karan-3108/fortress/v4/x/fees/types"
 	"github.com/Karan-3108/fortress/v4/x/incentives"
 	incentivesclient "github.com/Karan-3108/fortress/v4/x/incentives/client"
 	incentiveskeeper "github.com/Karan-3108/fortress/v4/x/incentives/keeper"
@@ -193,7 +190,6 @@ var (
 		epochs.AppModuleBasic{},
 		claims.AppModuleBasic{},
 		recovery.AppModuleBasic{},
-		fees.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -275,7 +271,6 @@ type Fortress struct {
 	EpochsKeeper     epochskeeper.Keeper
 	VestingKeeper    vestingkeeper.Keeper
 	RecoveryKeeper   *recoverykeeper.Keeper
-	FeesKeeper       feeskeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -332,7 +327,6 @@ func NewFortress(
 		// fortress keys
 		inflationtypes.StoreKey, erc20types.StoreKey, incentivestypes.StoreKey,
 		epochstypes.StoreKey, claimstypes.StoreKey, vestingtypes.StoreKey,
-		feestypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
@@ -462,12 +456,6 @@ func NewFortress(
 		app.AccountKeeper, app.BankKeeper, app.InflationKeeper, app.StakingKeeper, app.EvmKeeper,
 	)
 
-	app.FeesKeeper = feeskeeper.NewKeeper(
-		keys[feestypes.StoreKey], appCodec, app.GetSubspace(feestypes.ModuleName),
-		app.BankKeeper, app.EvmKeeper,
-		authtypes.FeeCollectorName,
-	)
-
 	epochsKeeper := epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
 	app.EpochsKeeper = *epochsKeeper.SetHooks(
 		epochskeeper.NewMultiEpochHooks(
@@ -487,7 +475,6 @@ func NewFortress(
 		evmkeeper.NewMultiEvmHooks(
 			app.Erc20Keeper.Hooks(),
 			app.IncentivesKeeper.Hooks(),
-			app.FeesKeeper.Hooks(),
 			app.ClaimsKeeper.Hooks(),
 		),
 	)
@@ -589,7 +576,6 @@ func NewFortress(
 		claims.NewAppModule(appCodec, *app.ClaimsKeeper),
 		vesting.NewAppModule(app.VestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		recovery.NewAppModule(*app.RecoveryKeeper),
-		fees.NewAppModule(app.FeesKeeper, app.AccountKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -626,7 +612,6 @@ func NewFortress(
 		claimstypes.ModuleName,
 		incentivestypes.ModuleName,
 		recoverytypes.ModuleName,
-		feestypes.ModuleName,
 	)
 
 	// NOTE: fee market module must go last in order to retrieve the block gas used.
@@ -659,7 +644,6 @@ func NewFortress(
 		erc20types.ModuleName,
 		incentivestypes.ModuleName,
 		recoverytypes.ModuleName,
-		feestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -679,11 +663,6 @@ func NewFortress(
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
 		ibchost.ModuleName,
-		// evm module denomination is used by the fees module, in AnteHandle
-		evmtypes.ModuleName,
-		// NOTE: fees need to be initialized before genutil module:
-		// gentx transactions use MinGasPriceDecorator.AnteHandle
-		feestypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -692,7 +671,7 @@ func NewFortress(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		// Ethermint modules
-		feemarkettypes.ModuleName,
+		evmtypes.ModuleName, feemarkettypes.ModuleName,
 		// Fortress modules
 		vestingtypes.ModuleName,
 		inflationtypes.ModuleName,
@@ -756,7 +735,6 @@ func NewFortress(
 		FeegrantKeeper:  app.FeeGrantKeeper,
 		IBCKeeper:       app.IBCKeeper,
 		FeeMarketKeeper: app.FeeMarketKeeper,
-		FeesKeeper:      app.FeesKeeper,
 		SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 		SigGasConsumer:  SigVerificationGasConsumer,
 		Cdc:             appCodec,
@@ -819,6 +797,7 @@ func (app *Fortress) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeli
 			app.tpsCounter.incrementSuccess()
 		}
 	}()
+
 	return app.BaseApp.DeliverTx(req)
 }
 
@@ -1020,7 +999,6 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(claimstypes.ModuleName)
 	paramsKeeper.Subspace(incentivestypes.ModuleName)
 	paramsKeeper.Subspace(recoverytypes.ModuleName)
-	paramsKeeper.Subspace(feestypes.ModuleName)
 	return paramsKeeper
 }
 

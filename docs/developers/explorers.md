@@ -19,18 +19,19 @@ Below is a list of public block explorers that support Fortress Mainnet and Test
 :::: tabs
 ::: tab Mainnet
 
-|            | Category | URL                                                    |
-| ---------- | -------- | ------------------------------------------------------ |
-| BigDipper  | `cosmos` | [fortress.bigdipper.live/](https://fortress.bigdipper.live/) |
-| Blockscout | `evm`    | [evm.fortress.org](https://evm.fortress.org/)                |
-| ATOMScan   | `cosmos` | [atomscan.com/fortress](https://atomscan.com/fortress)       |
+|                      | Category | URL                    |
+| -------------------- | -------- | ---------------------- |
+| Blockscout  | `evm`    | [evm.fortress.org](https://evm.fortress.org/)                       |
+| Mintscan   | `cosmos` | [explorer.fortress.org](https://explorer.fortress.org/) |
+| ATOMScan   | `cosmos` | [atomscan.com/fortress](https://atomscan.com/fortress) |
 :::
 ::: tab Testnet
 
-|            | Category | URL                                                                            |
-| ---------- | -------- | ------------------------------------------------------------------------------ |
-| BigDipper  | `cosmos` | [testnet.bigdipper.live](https://testnet.fortress.bigdipper.live/)                |
-| Blockscout | `evm`    | [evm.fortress.dev](https://evm.fortress.dev/)                                        |
-| Mintscan   | `cosmos` | [testnet.mintscan.io/fortress-testnet](https://testnet.mintscan.io/fortress-testnet) |
+|                      | Category | URL                    |
+| -------------------- | -------- | ---------------------- |
+| BigDipper  | `cosmos`    | [testnet.bigdipper.live](https://testnet.fortress.bigdipper.live/)                       |
+| Blockscout  | `evm`    | [evm.fortress.dev](https://evm.fortress.dev/)                       |
+| Fortresstats  | `cosmos`    | [evm.fortress.dev](https://testnet.fortresstats.io/)                       |
+| Mintscan   | `cosmos` | [mintscan.io/fortress/](https://www.mintscan.io/fortress/) |
 :::
 ::::

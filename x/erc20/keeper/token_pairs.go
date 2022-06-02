@@ -8,8 +8,8 @@ import (
 	"github.com/Karan-3108/fortress/v4/x/erc20/types"
 )
 
-// GetTokenPairs - get all registered token tokenPairs
-func (k Keeper) GetTokenPairs(ctx sdk.Context) []types.TokenPair {
+// GetAllTokenPairs - get all registered token tokenPairs
+func (k Keeper) GetAllTokenPairs(ctx sdk.Context) []types.TokenPair {
 	tokenPairs := []types.TokenPair{}
 
 	store := ctx.KVStore(k.storeKey)
