@@ -73,7 +73,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
-- (deps) [\#580](https://github.com/Karan-3108/fortress/pull/580) Bump Ethermint to [`v0.2.0-alpha`](https://github.com/Karan-3108/ethermint/releases/tag/v0.2.0-alpha)
+- (deps) [\#580](https://github.com/Karan-3108/fortress/pull/580) Bump Ethermint to [`v0.2.1-alpha`](https://github.com/Karan-3108/ethermint/releases/tag/v0.2.1-alpha)
 - (gitpod) [\#564](https://github.com/Karan-3108/fortress/pull/564) Add one-click development environment
 - (erc20) [\#556](https://github.com/Karan-3108/fortress/pull/556) Remove deprecated migrations.
 - (incentives) [\#551](https://github.com/Karan-3108/fortress/pull/551) Add additional check to only distribute incentives to EOAs.
