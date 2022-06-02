@@ -50,7 +50,7 @@ cat $HOME/.fortressd/config/genesis.json | jq -r --arg current_date "$current_da
 
 # Claim module account:
 # 0xA61808Fe40fEb8B3433778BBC2ecECCAA47c8c47 || fortress15cvq3ljql6utxseh0zau9m8ve2j8erz89m5wkz
-cat $HOME/.fortressd/config/genesis.json | jq -r --arg amount_to_claim "$amount_to_claim" '.app_state["bank"]["balances"] += [{"address":"fortress15cvq3ljql6utxseh0zau9m8ve2j8erz89m5wkz","coins":[{"denom":"afortress", "amount":$amount_to_claim}]}]' > $HOME/.fortressd/config/tmp_genesis.json && mv $HOME/.fortressd/config/tmp_genesis.json $HOME/.fortressd/config/genesis.json
+cat $HOME/.fortressd/config/genesis.json | jq -r --arg amount_to_claim "$amount_to_claim" '.app_state["bank"]["balances"] += [{"address":"fortress10uxqy09266dyrm72c7p9j00z8qzs78z5axec8c","coins":[{"denom":"afortress", "amount":$amount_to_claim}]}]' > $HOME/.fortressd/config/tmp_genesis.json && mv $HOME/.fortressd/config/tmp_genesis.json $HOME/.fortressd/config/genesis.json
 
 # disable produce empty block
 if [[ "$OSTYPE" == "darwin"* ]]; then
