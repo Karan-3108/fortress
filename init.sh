@@ -42,15 +42,15 @@ cat $HOME/.fortressd/config/genesis.json | jq -r --arg current_date "$current_da
 
 # Set claims records for validator account
 amount_to_claim=10000
-cat $HOME/.fortressd/config/genesis.json | jq -r --arg node_address "$node_address" --arg amount_to_claim "$amount_to_claim" '.app_state["claims"]["claims_records"]=[{"initial_claimable_amount":$amount_to_claim, "actions_completed":[false, false, false, false],"address":fortress1wvtx86ds97gd8jff06pz0mlvshedturl87929v}]' > $HOME/.fortressd/config/tmp_genesis.json && mv $HOME/.fortressd/config/tmp_genesis.json $HOME/.fortressd/config/genesis.json
+cat $HOME/.fortressd/config/genesis.json | jq -r --arg node_address "$node_address" --arg amount_to_claim "$amount_to_claim" '.app_state["claims"]["claims_records"]=[{"initial_claimable_amount":$amount_to_claim, "actions_completed":[false, false, false, false],"address":fortress1dlrx2we7hdrak87x7mxu2jxfg7j2rf9rpymtd8}]' > $HOME/.fortressd/config/tmp_genesis.json && mv $HOME/.fortressd/config/tmp_genesis.json $HOME/.fortressd/config/genesis.json
 
 # Set claims decay
 cat $HOME/.fortressd/config/genesis.json | jq -r --arg current_date "$current_date" '.app_state["claims"]["params"]["duration_of_decay"]="1000000s"' > $HOME/.fortressd/config/tmp_genesis.json && mv $HOME/.fortressd/config/tmp_genesis.json $HOME/.fortressd/config/genesis.json
 cat $HOME/.fortressd/config/genesis.json | jq -r --arg current_date "$current_date" '.app_state["claims"]["params"]["duration_until_decay"]="100000s"' > $HOME/.fortressd/config/tmp_genesis.json && mv $HOME/.fortressd/config/tmp_genesis.json $HOME/.fortressd/config/genesis.json
 
 # Claim module account:
-# 0xA61808Fe40fEb8B3433778BBC2ecECCAA47c8c47 || fortress1wvtx86ds97gd8jff06pz0mlvshedturl87929v
-cat $HOME/.fortressd/config/genesis.json | jq -r --arg amount_to_claim "$amount_to_claim" '.app_state["bank"]["balances"] += [{"address":"fortress1wvtx86ds97gd8jff06pz0mlvshedturl87929v","coins":[{"denom":"afortress", "amount":$amount_to_claim}]}]' > $HOME/.fortressd/config/tmp_genesis.json && mv $HOME/.fortressd/config/tmp_genesis.json $HOME/.fortressd/config/genesis.json
+# 0xA61808Fe40fEb8B3433778BBC2ecECCAA47c8c47 || fortress1dlrx2we7hdrak87x7mxu2jxfg7j2rf9rpymtd8
+cat $HOME/.fortressd/config/genesis.json | jq -r --arg amount_to_claim "$amount_to_claim" '.app_state["bank"]["balances"] += [{"address":"fortress1dlrx2we7hdrak87x7mxu2jxfg7j2rf9rpymtd8","coins":[{"denom":"afortress", "amount":$amount_to_claim}]}]' > $HOME/.fortressd/config/tmp_genesis.json && mv $HOME/.fortressd/config/tmp_genesis.json $HOME/.fortressd/config/genesis.json
 
 # disable produce empty block
 if [[ "$OSTYPE" == "darwin"* ]]; then

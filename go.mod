@@ -3,6 +3,7 @@ module github.com/Karan-3108/fortress/v4
 go 1.17
 
 require (
+	github.com/Karan-3108/ethermint v0.2.3-alpha
 	github.com/armon/go-metrics v0.3.11
 	github.com/cosmos/cosmos-sdk v0.45.4
 	github.com/cosmos/go-bip39 v1.0.0
@@ -12,7 +13,6 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/Karan-3108/ethermint v0.2.3-alpha
 	github.com/onsi/ginkgo/v2 v2.1.4
 	github.com/onsi/gomega v1.19.0
 	github.com/pkg/errors v0.9.1
