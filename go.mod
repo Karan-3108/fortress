@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/Karan-3108/ethermint v0.2.3-alpha
 	github.com/armon/go-metrics v0.3.11
-	github.com/cosmos/cosmos-sdk v0.45.4
+	github.com/cosmos/cosmos-sdk v0.45.6
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/ethereum/go-ethereum v1.10.16
